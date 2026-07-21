@@ -1,0 +1,16 @@
+{
+  "name": "CIPSA Signature",
+  "short_name": "CIPSA Sign",
+  "description": "Generador de firmas de correo para CIPSA",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#00796B",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

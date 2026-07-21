@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Carlos Cusi">
+  <meta name="assistant" content="grok,deepseek,chatgpt">
+  <meta name="description" content="Crea tu firma de correo electrónico fácilmente. Versión 3.0">
+  <meta name="keywords" content="firma de correo, firma electrónica, plantilla de firma, crear firma">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/png" href="images/logo_cip_col.png">
+  <title>Generador de Firma v3.0</title>
+  <!-- 
+    Generador de Firma v3.0
+    Propósito: Herramienta para crear firmas de correo electrónico estandarizadas.
+    Autor: Carlos Cusi
+    Dependencias: 
+    - CSS: style.css (estilos personalizados), animate.min.css (animaciones)
+    - JS: script.js (punto de entrada), tests.js (pruebas unitarias)
+    - Fuentes: Roboto (Google Fonts)
+  -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+</head>
+
+<body class="dark-theme">
+  <div class="form-container">
+    <div class="header-controls">
+      <h2>Generador de Firma</h2>
+    </div>
+    <div class="form-section">
+      <form class="form-content">
+        <!-- Sección: Datos Personales -->
+        <div class="section-personal">
+          <h3>Datos Personales <span class="tooltip" tabindex="0" aria-describedby="tt-personal"><span
+                class="tooltip-icon" aria-hidden="true">i</span><span id="tt-personal" class="tooltip-text"
+                role="tooltip">Completa primero información esencial: nombre, cargo, correo y teléfono.</span></span>
+          </h3>
+          <!-- Campos principales de datos -->
+          <div class="form-row data-fields">
+            <label for="name" class="label-10">Nombre:</label>
+            <input type="text" id="name" class="input-35" placeholder="Ingresa tu Nombre" title="Tu nombre completo"
+              required>
+            <span id="name-error" class="field-error" aria-live="polite" style="display:none;">Requerido</span>
+            <label for="position" class="label-10">Cargo:</label>
+            <input type="text" id="position" class="input-35" placeholder="Ingresa puesto o Área"
+              title="Tu cargo o área" required>
+          </div>
+          <div class="form-row data-fields">
+            <label for="email" class="label-10">Correo:</label>
+            <input type="email" id="email" class="input-35" placeholder="ejemplo@empresa.com"
+              title="Correo electrónico; validación de formato básico">
+            <span id="email-error" class="field-error" aria-live="polite" style="display:none;">Formato no válido</span>
+            <label for="phone" class="label-10">Teléfono:</label>
+            <input type="text" id="phone" class="input-35" placeholder="Ej: 3134200"
+              title="Teléfono fijo; usa solo dígitos">
+          </div>
+        </div>
+        <!-- Sección: Contacto -->
+        <div class="section-contact">
+          <h3>Contacto <span class="tooltip" tabindex="0" aria-describedby="tt-contact"><span class="tooltip-icon"
+                aria-hidden="true">i</span><span id="tt-contact" class="tooltip-text" role="tooltip">Añade extensiones y
+                móviles; activa WhatsApp/Telegram si aplica.</span></span></h3>
+          <div class="form-row data-fields">
+            <label for="extension" class="label-10">Ext.:</label>
+            <input type="text" id="extension" class="input-35" placeholder="Ingresa Anexo"
+              title="Extensión del teléfono; opcional">
+            <label for="mobile" class="label-10">Móvil:</label>
+            <div class="input-group input-35">
+              <input type="text" id="mobile" class="input-full" placeholder="Ingresa Número Celular"
+                title="Número móvil; puedes activar WhatsApp/Telegram">
+              <input type="checkbox" id="add-whatsapp" title="Añadir WhatsApp"> <label for="add-whatsapp">Wsp</label>
+              <input type="checkbox" id="add-telegram" title="Añadir Telegram"> <label for="add-telegram">Tlg</label>
+            </div>
+          </div>
+          <div class="form-row data-fields">
+            <label for="mobile2" class="label-10">Móvil 2:</label>
+            <div class="input-group input-35">
+              <input type="text" id="mobile2" class="input-full" placeholder="Número Alternativo"
+                title="Número móvil alternativo; opcional">
+              <input type="checkbox" id="add-whatsapp2" title="Añadir WhatsApp 2"> <label
+                for="add-whatsapp2">Wsp</label>
+            </div>
+          </div>
+        </div>
+        <!-- Sección: Personalización Visual -->
+        <div class="section-visual">
+          <h3>Personalización Visual <span class="tooltip" tabindex="0" aria-describedby="tt-visual"><span
+                class="tooltip-icon" aria-hidden="true">i</span><span id="tt-visual" class="tooltip-text"
+                role="tooltip">Configura logo, colores y línea; añade un banner si lo deseas.</span></span></h3>
+          <div class="form-row">
+            <label for="logo-upload" class="label-10">Subir imagen o logo:</label>
+            <div class="input-group input-35">
+              <input type="file" id="logo-upload" class="file-input" accept="image/*"
+                aria-label="Seleccionar archivo de imagen para el logo" title="Sube una imagen para el logo">
+              <div id="logo-preview" class="logo-preview" role="img" aria-label="Previsualización del logo subido">
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <label for="logo-type" class="label-10">Tipo de Logo:</label>
+            <select id="logo-type" class="input-35" aria-label="Seleccionar tipo de logo"
+              title="Elige entre logo relleno, contorno o subir imagen">
+              <option value="logo1" selected>Logo 1 (Relleno)</option>
+              <option value="logo2">Logo 2 (Contorno)</option>
+              <option value="none">Sin Logo</option>
+              <option value="upload">Subir Imagen</option>
+            </select>
+            <label for="logo-color" class="label-10">Color Logo:</label>
+            <input type="color" id="logo-color" class="input-35 color-picker" value="#FF0000"
+              title="Selecciona el color del logo" aria-label="Selector de color para el logo">
+          </div>
+          <div class="form-row row-center">
+            <label class="label-10">Vista previa Logo:</label>
+            <div id="svg-preview" class="logo-preview" aria-label="Previsualización del logo seleccionado"></div>
+          </div>
+          <div class="form-row">
+            <label for="line-color" class="label-10">Color Línea:</label>
+            <input type="color" id="line-color" class="input-35 color-picker" value="#003366"
+              title="Selecciona el color de la línea vertical">
+            <label for="line-width" class="label-10">Ancho Línea:</label>
+            <input type="range" id="line-width" class="input-35 slider" min="1" max="10" value="4" step="1"
+              title="Ancho de la línea vertical">
+            <span id="line-width-value" class="value-display">4px</span>
+          </div>
+          <!-- Sección: Banner Institucional -->
+          <div class="form-row data-fields">
+            <label for="banner-link" class="label-10">Link Banner:</label>
+            <input type="url" id="banner-link" class="input-35" placeholder="https://tu-destino.com"
+              title="URL que se abrirá al hacer clic en el banner">
+            <label for="banner-alt" class="label-10">Texto Alt Banner:</label>
+            <input type="text" id="banner-alt" class="input-35" placeholder="Promoción / Campaña"
+              title="Texto alternativo para accesibilidad (describe el banner)">
+          </div>
+        </div>
+        <!-- Sección: Redes Sociales -->
+        <div class="section-social">
+          <h3>Redes Sociales <span class="tooltip" tabindex="0" aria-describedby="tt-social"><span class="tooltip-icon"
+                aria-hidden="true">i</span><span id="tt-social" class="tooltip-text" role="tooltip">Agrega enlaces a tus
+                perfiles y elige el color de los íconos.</span></span></h3>
+          <div class="form-row data-fields">
+            <label for="facebook" class="label-10">Facebook:</label>
+            <input type="text" id="facebook" class="input-35" value="https://es-la.facebook.com/vinifan/"
+              title="URL de tu perfil de Facebook" placeholder="Comparte tu Link">
+            <label for="instagram" class="label-10">Instagram:</label>
+            <input type="text" id="instagram" class="input-35" value="https://www.instagram.com/vinifanperu/?hl=es-la"
+              title="URL de tu perfil de Instagram" placeholder="Comparte tu Link">
+          </div>
+          <div class="form-row data-fields">
+            <label for="youtube" class="label-10">YouTube:</label>
+            <input type="text" id="youtube" class="input-35" title="URL de tu canal de YouTube"
+              value="https://www.youtube.com/channel/UC1c_boc4GF8fVC0bHGFNqqQ" placeholder="Comparte tu Link">
+            <label for="tiktok" class="label-10">TikTok:</label>
+            <input type="text" id="tiktok" class="input-35" value="https://www.tiktok.com/@vinifanperu"
+              title="URL de tu perfil de TikTok" placeholder="Comparte tu Link">
+          </div>
+           <div class="form-row">
+             <label for="social-icon-color" class="label-10">Color Iconos Sociales:</label>
+             <select id="social-icon-color" class="input-35" aria-label="Seleccionar color para iconos sociales"
+               title="Elige el estilo de color para los íconos sociales">
+               <option value="original" selected="">Colores originales</option>
+               <option value="mono">Monocromático</option>
+               <option value="blue">Azul</option>
+               <option value="red">Rojo</option>
+               <option value="outline">Outline</option>
+             </select>
+           </div>
+        </div>
+        <!-- Sección: Configuración Avanzada -->
+        <div class="section-advanced">
+          <h3>Configuración Avanzada <span class="tooltip" tabindex="0" aria-describedby="tt-advanced"><span
+                class="tooltip-icon" aria-hidden="true">i</span><span id="tt-advanced" class="tooltip-text"
+                role="tooltip">Activa la firma digital para añadir un enlace discreto detrás del logo.</span></span>
+          </h3>
+          <div class="form-row data-fields">
+            <label for="enable-digital-signature" class="label-10">Activar Firma Digital:</label>
+            <input type="checkbox" id="enable-digital-signature" class="input-35"
+              title="Activa el enlace detrás del logo en las firmas" checked>
+            <label for="digital-signature-url" class="label-10">URL Firma Digital:</label>
+            <input type="url" id="digital-signature-url" class="input-35" placeholder="https://www.cipsa.com.pe/"
+              title="URL que se abre al hacer clic en el logo">
+          </div>
+        </div>
+      </form>
+      <!-- Sección: Acciones -->
+      <div class="section-actions">
+        <h3>Generar y Copiar <span class="tooltip" tabindex="0" aria-describedby="tt-actions"><span class="tooltip-icon"
+              aria-hidden="true">i</span><span id="tt-actions" class="tooltip-text" role="tooltip">Genera la firma y
+              cópiala en formato HTML o texto.</span></span></h3>
+        <div class="form-row buttons">
+          <button type="button" data-type="full" class="button-40">Generar Firma Completa</button>
+          <button type="button" data-type="medium" class="button-40">Generar Firma Media</button>
+          <button type="button" data-type="short" class="button-40">Generar Firma Corta</button>
+        </div>
+        <div class="form-row buttons">
+          <button type="button" id="copy-html" class="button-40">Copiar Firma (HTML)</button>
+          <button type="button" id="copy-text" class="button-40">Copiar Firma (Texto)</button>
+          <button type="button" id="reset-form" class="button-40">Reiniciar</button>
+        </div>
+      </div>
+    </div>
+    <div class="result-section">
+      <div id="status-message" class="status-message"></div>
+      <div id="signatureOutput" class="signature-container"></div>
+    </div>
+  </div>
+  <!-- Modal para mensajes -->
+  <div id="message-modal" class="modal">
+    <div class="modal-content animate__animated animate__fadeInUp">
+      <p id="modal-message"></p>
+    </div>
+  </div>
+  <script type="module" src="js/script.js"></script>
+  <script type="module" src="js/tests.js"></script>
+</body>
+
+</html>
