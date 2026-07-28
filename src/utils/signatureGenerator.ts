@@ -7,7 +7,6 @@ const STYLES = {
   link: `color: #333333; text-decoration: none;`,
   socialIcon: `width="20" height="20" alt="{alt}" style="display: inline-block; vertical-align: middle;"`,
   socialWrap: `display: inline-block; margin-right: 4px; text-decoration: none; vertical-align: middle;`,
-  socialRow: `margin: 0; padding: 0; font-size: 0; line-height: 0; white-space: nowrap;`,
   banner: `display: block; border: none; outline: none; text-decoration: none; width: 100%; max-width: 450px; height: auto; margin: 12px auto 0;`
 };
 
@@ -119,7 +118,7 @@ export async function getIconBase64(
 
   try {
     const svgDataUri = toSvgDataUri(svgText);
-    cache[cacheKey] = svgDataUri;
+    cache[cacheKey] = svgDataUri; // Performance: cache mutations avoid re-fetching icons
     return svgDataUri;
   } catch (err) {
     console.error(`[getIconBase64] Error creating SVG data URI for ${iconName}:`, err);
@@ -465,7 +464,7 @@ export async function generateSignature(
           }
 
           logoBase64 = await svgToPngBase64(svgText, logoWidth, logoWidth);
-          iconCache[cacheKey] = logoBase64;
+          iconCache[cacheKey] = logoBase64; // Performance: cache mutations avoid re-converting logos
         } catch (err) {
           console.error('[SignatureGenerator] Error al cargar SVG:', err);
         }

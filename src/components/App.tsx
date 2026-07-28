@@ -1,5 +1,5 @@
 import { createSignal, createEffect, Show, onCleanup } from 'solid-js';
-import { FormData, SignatureType, StatusMessage as StatusMessageType, ValidationResult, DEFAULT_FORM_DATA } from '../types';
+import { FormData, SignatureType, StatusMessage as StatusMessageType, ValidationResult, DEFAULT_FORM_DATA, AppConfig } from '../types';
 import { useSignatureFormData } from '../hooks/useLocalStorage';
 import { generateSignature, getFileAsBase64, fileToBase64, svgToPngBase64 } from '../utils/signatureGenerator';
 import { copyHTMLToClipboard } from '../utils/clipboard';
@@ -17,11 +17,11 @@ import { AdvancedConfigSection } from './AdvancedConfigSection';
 
 import '../index.css';
 
-  const DEFAULT_CONFIG = {
-   bannerImage: 'images/baner_lineas.png',
-   defaultLineColor: '#003366',
-   base64Images: {} as Record<string, string>,
-   baseSvgCache: {} as Record<string, string>
+const DEFAULT_CONFIG: AppConfig = {
+  bannerImage: 'images/baner_lineas.png',
+  defaultLineColor: '#003366',
+  base64Images: {},
+  baseSvgCache: {},
 };
 
 function getInitialTheme(): 'light' | 'dark' {

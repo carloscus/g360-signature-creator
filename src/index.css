@@ -72,14 +72,11 @@
   --modal-border: rgba(15, 23, 42, 0.1);
   --logo-preview-bg: #f1f5f9;
   --logo-preview-border: rgba(15, 23, 42, 0.12);
-  --slider-thumb-border: #ffffff;
   --spinner-track: rgba(15, 23, 42, 0.1);
   --btn-secondary-bg: rgba(15, 23, 42, 0.06);
   --btn-secondary-hover: rgba(15, 23, 42, 0.1);
   --checkbox-bg: rgba(15, 23, 42, 0.08);
-  --checkbox-checked-bg: var(--primary-color);
   --scrollbar-thumb: rgba(15, 23, 42, 0.15);
-  --scrollbar-track: transparent;
 }
 
 * { box-sizing: border-box; }
