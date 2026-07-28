@@ -95,6 +95,13 @@ body {
 
 #root { min-height: 100vh; }
 
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease !important;
+}
+
 .app-container {
   display: flex;
   min-height: 100vh;
@@ -755,6 +762,22 @@ select.input-35 option:checked {
   cursor: not-allowed; 
   transform: none; 
   box-shadow: none; 
+}
+
+.btn-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.btn-loading::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
 }
 .button-40.secondary { 
   background-color: var(--btn-secondary-bg); 

@@ -46,9 +46,12 @@ export function App() {
   const [sidebarLogo, setSidebarLogo] = createSignal<string>('');
   const [confirmState, setConfirmState] = createSignal<{ message: string; onConfirm: () => void } | null>(null);
   const [showSavedIndicator, setShowSavedIndicator] = createSignal(false);
+  const [isGenerating, setIsGenerating] = createSignal(false);
 
   const toggleTheme = () => {
+    document.documentElement.classList.add('theme-transition');
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+    setTimeout(() => document.documentElement.classList.remove('theme-transition'), 300);
   };
 
   createEffect(() => {
@@ -161,11 +164,25 @@ export function App() {
     }
   };
 
+  const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp', 'image/svg+xml'];
+  const MAX_LOGO_SIZE_MB = 2;
+
   const handleLogoUpload = async (file: File | null) => {
     if (!file) {
       handleRemoveLogo();
       return;
     }
+
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setStatusMessage({ text: 'Formato no soportado. Usa PNG, JPG, GIF, WebP o SVG.', type: 'error' });
+      return;
+    }
+
+    if (file.size > MAX_LOGO_SIZE_MB * 1024 * 1024) {
+      setStatusMessage({ text: `El archivo supera ${MAX_LOGO_SIZE_MB}MB. Usa una imagen más pequeña.`, type: 'error' });
+      return;
+    }
+
     try {
       const base64 = await fileToBase64(file);
       setFormData(prev => ({ ...prev, logo: base64, logoType: 'upload' }));
@@ -175,18 +192,21 @@ export function App() {
     }
   };
 
+  const resetLogoInput = () => {
+    const fileInput = document.getElementById('logo-upload') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+  };
+
   const handleClearUploadedLogo = () => {
     setFormData(prev => ({ ...prev, logo: null }));
     setUploadedLogoPreview(null);
-    const fileInput = document.getElementById('logo-upload') as HTMLInputElement;
-    if (fileInput) fileInput.value = '';
+    resetLogoInput();
   };
 
   const handleRemoveLogo = () => {
     setFormData(prev => ({ ...prev, logo: null, logoType: 'none' }));
     setUploadedLogoPreview(null);
-    const fileInput = document.getElementById('logo-upload') as HTMLInputElement;
-    if (fileInput) fileInput.value = '';
+    resetLogoInput();
   };
 
   const updateSignaturePreview = async (type: SignatureType) => {
@@ -211,8 +231,10 @@ export function App() {
     }
 
     setErrors({});
+    setIsGenerating(true);
     setActiveType(type);
     await updateSignaturePreview(type);
+    setIsGenerating(false);
 
     setStatusMessage({
       text: `Modo: Firma ${type === 'full' ? 'Completa' : type === 'medium' ? 'Media' : type === 'short' ? 'Corta' : 'Mínima (Zimbra/Carbonio)'}`,
@@ -421,16 +443,17 @@ export function App() {
           signatureHTML={signatureHTML()}
           isLoading={isLoading()}
         />
-<ActionButtons
-            activeType={activeType()}
-            signatureHTML={signatureHTML()}
-            onGenerateFull={() => handleGenerate('full')}
-            onGenerateMedium={() => handleGenerate('medium')}
-            onGenerateShort={() => handleGenerate('short')}
-            onGenerateMinimal={() => handleGenerate('minimal')}
-            onCopyHTML={handleCopyHTML}
-            onReset={handleReset}
-          />
+        <ActionButtons
+          activeType={activeType()}
+          signatureHTML={signatureHTML()}
+          isGenerating={isGenerating()}
+          onGenerateFull={() => handleGenerate('full')}
+          onGenerateMedium={() => handleGenerate('medium')}
+          onGenerateShort={() => handleGenerate('short')}
+          onGenerateMinimal={() => handleGenerate('minimal')}
+          onCopyHTML={handleCopyHTML}
+          onReset={handleReset}
+        />
       </div>
 
       <Modal
