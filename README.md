@@ -2,7 +2,7 @@
 
 > Generador de firmas corporativas CIPSA con interfaz moderna. Genera firmas en 4 formatos: Completa, Media, Corta y Mínima (optimizada para Zimbra/Carbonio).
 
-[![SolidJS](https://img.shields.io/badge/SolidJS-2.4-2e4c89?logo=solid)](https://www.solidjs.com)
+[![SolidJS](https://img.shields.io/badge/SolidJS-1.7-2e4c89?logo=solid)](https://www.solidjs.com)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)](https://www.typescriptlang.org)
 [![Vite](https://img.shields.io/badge/Vite-4.5-646CFF?logo=vite)](https://vitejs.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
