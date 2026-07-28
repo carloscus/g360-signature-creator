@@ -42,9 +42,12 @@ Generador web de firmas corporativas para CIPSA. Permite crear firmas de correo 
 - **6 Paletas de Colores**: Original (multicolor), Mono, Azul, Rojo, Verde, Outline
 - **Mensaje Eco**: Banner "Antes de imprimir, piensa en el medio ambiente" con bandera de Perú
 - **Logos SVG**: Logos vectoriales pre-cargados (logo1, logo2), conversión SVG → PNG bajo demanda
+- **Logo Personalizado**: Subir imagen propia con preview en vivo
 - **Modal de Confirmación**: Para acciones destructivas (reiniciar formulario)
 - **Preview en Vivo**: Generación automática con debounce de 400ms
-- **Validación de Campos**: Nombre y cargo obligatorios, mensajes de error inline
+- **Validación de Campos**: Nombre y cargo obligatorios, validación de URLs y emails
+- **Firma Digital**: Enlace discreto detrás del logo para identidad digital
+- **Persistencia**: Borrador auto-guardado en `localStorage`
 - **Accesibilidad**: `role`, `aria-*`, focus trap, tooltips con soporte de teclado
 
 ---
@@ -69,10 +72,10 @@ Generador web de firmas corporativas para CIPSA. Permite crear firmas de correo 
 
 ## Tecnologías
 
-- **SolidJS 2.4** - Framework reactivo
-- **TypeScript 5** - Tipado estático
-- **Vite 4.5** - Build tool y dev server
-- **CSS Puro** - Estilos con variables CSS para temas
+- **SolidJS 1.7** - Framework reactivo (reemplaza React con mejor rendimiento)
+- **TypeScript 5** - Tipado estático estricto
+- **Vite 4.5** - Build tool y dev server con HMR
+- **CSS Puro** - Estilos con variables CSS para temas claro/oscuro
 
 ---
 
@@ -111,7 +114,9 @@ Genera los archivos estáticos en la carpeta `dist/`.
 ### Flujo Recomendado
 
 ```
-Firma Mínima → Copiar HTML (HTML) → Pegar en el editor HTML de Zimbra/Carbonio
+1. Completar formulario → Seleccionar "Firma Mínima"
+2. Copiar HTML (botón "Copiar Firma (HTML)")
+3. En Zimbra/Carbonio → Configurar firma → Editor HTML → Pegar
 ```
 
 ### ¿Por qué Firma Mínima?
@@ -124,7 +129,8 @@ Firma Mínima → Copiar HTML (HTML) → Pegar en el editor HTML de Zimbra/Carbo
 
 - Tabla con `width="auto"` y `max-width="320px"` para mejor adaptación en el editor
 - Iconos SVG como data URI (no PNG canvas) para mayor compatibilidad
-- Sin JavaScript — HTML estático pura
+- Sin JavaScript — HTML estático puro
+- Compatible con: Zimbra 8.x, Zimbra 9.x, Carbonio, Outlook Web, Gmail
 
 ---
 
@@ -136,36 +142,51 @@ g360-signature-creator/
 ├── package.json
 ├── vite.config.js
 ├── tsconfig.json
+├── manifest.json
 ├── .github/
 │   └── workflows/
-│       └── deploy.yml          # Deploy automático a GitHub Pages
+│       └── deploy.yml              # Deploy automático a GitHub Pages
 ├── public/
 │   └── images/
-│       ├── logo1.svg           # Logo CIPSA (relleno)
-│       ├── logo2.svg           # Logo CIPSA (contorno)
-│       ├── facebook.svg
+│       ├── logo1.svg               # Logo CIPSA (relleno)
+│       ├── logo2.svg               # Logo CIPSA (contorno)
+│       ├── facebook.svg            # Iconos sociales
 │       ├── instagram.svg
 │       ├── youtube.svg
 │       ├── tiktok.svg
 │       ├── linkedin.svg
-│       └── ubicacion.svg
-├── samples/                     # Versión legacy (vanilla JS)
+│       ├── whatsapp.svg
+│       ├── telegram.svg
+│       ├── ubicacion.svg
+│       ├── phone_icon.svg
+│       ├── mobile_icon.svg
+│       ├── email_icon.svg
+│       ├── eco.png                 # Badge eco-friendly
+│       └── baner_lineas.png        # Banner institucional
+├── samples/                         # Versión legacy (vanilla JS)
 │   └── README.md
 └── src/
-    ├── index.tsx               # Punto de entrada
-    ├── index.css               # Estilos globales
-    ├── App.tsx                 # Componente principal
+    ├── index.jsx                    # Punto de entrada
+    ├── index.css                    # Estilos globales (temas claro/oscuro)
     ├── types/
-    │   └── index.ts            # Tipos TypeScript
+    │   └── index.ts                 # Tipos TypeScript
+    ├── hooks/
+    │   └── useLocalStorage.ts       # Persistencia en localStorage
     ├── utils/
-    │   ├── signatureGenerator.ts  # Generación de HTML
-    │   ├── clipboard.ts        # Copiado al portapapeles
-    │   └── icons.ts            # Carga y conversión de iconos SVG
+    │   ├── signatureGenerator.ts    # Generación de HTML de firma
+    │   ├── clipboard.ts             # Copiado al portapapeles (HTML)
+    │   └── validation.ts            # Validación de campos y URLs
     └── components/
-        ├── Sidebar.tsx         # Formulario de entrada
-        ├── PreviewPanel.tsx    # Vista previa de la firma
-        ├── ActionButtons.tsx   # Botones de generación y acciones
-        └── StatusMessage.tsx  # Mensajes de estado/success/error
+        ├── App.tsx                  # Componente raíz y estado global
+        ├── PersonalDataSection.tsx  # Sección: nombre, cargo, email, teléfono
+        ├── ContactSection.tsx       # Sección: extensión, móviles, dirección
+        ├── VisualCustomizationSection.tsx  # Sección: logo, colores, línea
+        ├── BannerSection.tsx        # Sección: banner institucional
+        ├── SocialSection.tsx        # Sección: redes sociales + paleta
+        ├── AdvancedConfigSection.tsx # Sección: firma digital
+        ├── PreviewPanel.tsx         # Panel de vista previa
+        ├── ActionButtons.tsx        # Botones de generación y acciones
+        └── Modal.tsx                # Modal de notificación y confirmación
 ```
 
 ---

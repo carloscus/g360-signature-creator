@@ -1,7 +1,7 @@
 {
-  "name": "cipsa-signature",
+  "name": "g360-signature-creator",
   "version": "1.0.0",
-  "description": "Generador de firmas corporativas CIPSA con SolidJS",
+  "description": "Generador de firmas corporativas G360 con SolidJS",
   "type": "module",
   "scripts": {
     "dev": "vite",

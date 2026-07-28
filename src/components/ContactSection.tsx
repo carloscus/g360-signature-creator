@@ -46,8 +46,8 @@ export function ContactSection(props: ContactSectionProps) {
               type="checkbox"
               id="add-whatsapp"
               title="Añadir WhatsApp"
-              checked={props.formData.addWhatsapp}
-              onChange={(e) => props.onChange('addWhatsapp', e.currentTarget.checked)}
+              checked={props.formData.enableWhatsApp}
+              onChange={(e) => props.onChange('enableWhatsApp', e.currentTarget.checked)}
             />
             <label for="add-whatsapp">Wsp</label>
           </div>
@@ -56,8 +56,8 @@ export function ContactSection(props: ContactSectionProps) {
               type="checkbox"
               id="add-telegram"
               title="Añadir Telegram"
-              checked={props.formData.addTelegram}
-              onChange={(e) => props.onChange('addTelegram', e.currentTarget.checked)}
+              checked={props.formData.enableTelegram}
+              onChange={(e) => props.onChange('enableTelegram', e.currentTarget.checked)}
             />
             <label for="add-telegram">Tlg</label>
           </div>
@@ -104,8 +104,8 @@ export function ContactSection(props: ContactSectionProps) {
               type="checkbox"
               id="add-whatsapp2"
               title="Añadir WhatsApp 2"
-              checked={props.formData.addWhatsapp2}
-              onChange={(e) => props.onChange('addWhatsapp2', e.currentTarget.checked)}
+              checked={props.formData.enableWhatsApp2}
+              onChange={(e) => props.onChange('enableWhatsApp2', e.currentTarget.checked)}
             />
             <label for="add-whatsapp2">Wsp</label>
           </div>

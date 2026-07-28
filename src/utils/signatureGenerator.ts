@@ -1,7 +1,7 @@
 import { FormData, SignatureType, AppConfig, SocialIconColor } from '../types';
 import { sanitize } from './validation';
 
-const S = {
+const STYLES = {
   contactRow: `margin: 3px 0; color: #333333; font-size: 9pt; font-family: Arial, Helvetica, sans-serif;`,
   contactIcon: `width="16" height="16" style="margin-right: 5px; vertical-align: middle;"`,
   link: `color: #333333; text-decoration: none;`,
@@ -230,7 +230,7 @@ export async function fileToBase64(file: File, maxWidth = 90, maxHeight = 90): P
   });
 }
 
-export function getFormData(formData: FormData): FormData {
+export function prepareFormData(formData: FormData): FormData {
   return {
     name: sanitize(formData.name?.trim() || ''),
     position: sanitize(formData.position?.trim() || ''),
@@ -239,9 +239,9 @@ export function getFormData(formData: FormData): FormData {
     extension: sanitize(formData.extension?.trim() || ''),
     mobile: sanitize(formData.mobile?.trim() || ''),
     mobile2: sanitize(formData.mobile2?.trim() || ''),
-    addWhatsapp: !!formData.addWhatsapp,
-    addWhatsapp2: !!formData.addWhatsapp2,
-    addTelegram: !!formData.addTelegram,
+    enableWhatsApp: !!formData.enableWhatsApp,
+    enableWhatsApp2: !!formData.enableWhatsApp2,
+    enableTelegram: !!formData.enableTelegram,
     address: sanitize(formData.address?.trim() || ''),
     addressMapUrl: sanitize(formData.addressMapUrl?.trim() || ''),
     facebook: sanitize(formData.facebook?.trim() || ''),
@@ -292,16 +292,16 @@ async function generatePhoneHTML(
   const extPart = extension ? ` <span style="color: #666666; font-size: 9pt;">ext. ${extension}</span>` : '';
 
   return `
-    <p style="${S.contactRow}">
-      <img src="${iconSrc}" ${S.contactIcon}>
-      <a href="${telHref}" style="${S.link}" title="Llamar a ${phone}" aria-label="Llamar al teléfono ${phone}">${phone}</a>${extPart}
+    <p style="${STYLES.contactRow}">
+      <img src="${iconSrc}" ${STYLES.contactIcon}>
+      <a href="${telHref}" style="${STYLES.link}" title="Llamar a ${phone}" aria-label="Llamar al teléfono ${phone}">${phone}</a>${extPart}
     </p>`;
 }
 
 async function generateMobileHTML(
   mobile: string,
-  addWhatsapp: boolean,
-  addTelegram: boolean,
+  enableWhatsApp: boolean,
+  enableTelegram: boolean,
   name: string,
   config: AppConfig,
   fields: FormData,
@@ -318,11 +318,11 @@ async function generateMobileHTML(
   const tgLink = `https://t.me/+${intl}`;
 
   let sideIcons = '';
-  if (addWhatsapp) {
+  if (enableWhatsApp) {
     const waIcon = await getIconBase64('whatsapp', fields.socialIconColor, config, iconCache);
     sideIcons += `<a href="${waLink}" target="_blank" rel="noopener noreferrer" title="WhatsApp" style="text-decoration: none; margin-left: 6px;"><img src="${waIcon}" width="14" height="14" alt="WhatsApp" style="vertical-align: middle;"></a>`;
   }
-  if (addTelegram) {
+  if (enableTelegram) {
     const tgIcon = await getIconBase64('telegram', fields.socialIconColor, config, iconCache);
     sideIcons += `<a href="${tgLink}" target="_blank" rel="noopener noreferrer" title="Telegram" style="text-decoration: none; margin-left: 6px;"><img src="${tgIcon}" width="14" height="14" alt="Telegram" style="vertical-align: middle;"></a>`;
   }
@@ -330,9 +330,9 @@ async function generateMobileHTML(
   const mobileIconSrc = await getIconBase64('mobile_icon', fields.socialIconColor, config, iconCache);
 
   return `
-    <p style="${S.contactRow}">
-      <img src="${mobileIconSrc}" ${S.contactIcon}>
-      <a href="${telLink}" style="${S.link}" title="Llamar a ${mobile}" aria-label="Llamar al móvil ${mobile}">${mobile}</a>${sideIcons}
+    <p style="${STYLES.contactRow}">
+      <img src="${mobileIconSrc}" ${STYLES.contactIcon}>
+      <a href="${telLink}" style="${STYLES.link}" title="Llamar a ${mobile}" aria-label="Llamar al móvil ${mobile}">${mobile}</a>${sideIcons}
     </p>`;
 }
 async function generateSocialHTML(
@@ -364,8 +364,8 @@ async function generateSocialHTML(
     const iconSrc = await getIconBase64(sc.key, fields.socialIconColor, config, iconCache);
 
     socials.push(`
-      <a href="${url}" style="${S.socialWrap}">
-        <img src="${iconSrc}" ${S.socialIcon.replace('{alt}', sc.key)}>
+      <a href="${url}" style="${STYLES.socialWrap}">
+        <img src="${iconSrc}" ${STYLES.socialIcon.replace('{alt}', sc.key)}>
       </a>`);
   }
 
@@ -385,8 +385,8 @@ function generateBannerHTML(type: SignatureType, hasLogo: boolean, config: AppCo
   if (type !== 'full') return '';
 
   const bannerSrc = fields.bannerLink && fields.bannerLink.trim()
-    ? `<a href="${fields.bannerLink.trim()}" target="_blank" rel="noopener noreferrer"><img src="${config.base64Images.bannerImage || 'images/baner_lineas.png'}" alt="${fields.bannerAlt || 'Banner'}" style="${S.banner}"></a>`
-    : `<img src="${config.base64Images.bannerImage || 'images/baner_lineas.png'}" alt="${fields.bannerAlt || 'Banner'}" style="${S.banner}">`;
+    ? `<a href="${fields.bannerLink.trim()}" target="_blank" rel="noopener noreferrer"><img src="${config.base64Images.bannerImage || 'images/baner_lineas.png'}" alt="${fields.bannerAlt || 'Banner'}" style="${STYLES.banner}"></a>`
+    : `<img src="${config.base64Images.bannerImage || 'images/baner_lineas.png'}" alt="${fields.bannerAlt || 'Banner'}" style="${STYLES.banner}">`;
 
   const cols = hasLogo ? 2 : 1;
 
@@ -426,7 +426,7 @@ export async function generateSignature(
   config: AppConfig,
   iconCache: Record<string, string>
 ): Promise<string> {
-  const fields = getFormData(formData);
+  const fields = prepareFormData(formData);
 
   const wrapIfNeeded = (inner: string) => {
     if (fields.enableDigitalSignature) {
@@ -484,8 +484,8 @@ export async function generateSignature(
   // Generar contenido de forma paralela
   const [phoneHTML, mobileHTML, mobile2HTML, socialHTML] = await Promise.all([
     generatePhoneHTML(fields.phone, fields.extension, fields, config, iconCache),
-    generateMobileHTML(fields.mobile, fields.addWhatsapp, fields.addTelegram, fields.name, config, fields, iconCache),
-    generateMobileHTML(fields.mobile2, fields.addWhatsapp2, false, fields.name, config, fields, iconCache),
+    generateMobileHTML(fields.mobile, fields.enableWhatsApp, fields.enableTelegram, fields.name, config, fields, iconCache),
+    generateMobileHTML(fields.mobile2, fields.enableWhatsApp2, false, fields.name, config, fields, iconCache),
     generateSocialHTML(fields, type, config, iconCache)
   ]);
 
@@ -496,9 +496,9 @@ export async function generateSignature(
   const emailIconSrc = await getIconBase64('email_icon', fields.socialIconColor, config, iconCache);
   const emailHTML = fields.email
     ? `
-    <p style="${S.contactRow}">
-      <img src="${emailIconSrc}" ${S.contactIcon}>
-      <a href="mailto:${fields.email}" style="${S.link}">${fields.email}</a>
+    <p style="${STYLES.contactRow}">
+      <img src="${emailIconSrc}" ${STYLES.contactIcon}>
+      <a href="mailto:${fields.email}" style="${STYLES.link}">${fields.email}</a>
     </p>`
     : '';
 
@@ -506,9 +506,9 @@ export async function generateSignature(
   const locationIconSrc = await getIconBase64('ubicacion', fields.socialIconColor, config, iconCache);
   const locationHTML = fields.address
     ? `
-    <p style="${S.contactRow}">
-      <img src="${locationIconSrc}" ${S.contactIcon}>
-      <a href="${fields.addressMapUrl || 'https://maps.app.goo.gl/5gHmxXAgRGwDr5jk6'}" target="_blank" rel="noopener noreferrer" style="${S.link}">${fields.address.replace(/\n/g, '<br>')}</a>
+    <p style="${STYLES.contactRow}">
+      <img src="${locationIconSrc}" ${STYLES.contactIcon}>
+      <a href="${fields.addressMapUrl || 'https://maps.app.goo.gl/5gHmxXAgRGwDr5jk6'}" target="_blank" rel="noopener noreferrer" style="${STYLES.link}">${fields.address.replace(/\n/g, '<br>')}</a>
     </p>`
     : '';
 

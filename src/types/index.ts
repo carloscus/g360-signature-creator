@@ -6,9 +6,9 @@ export interface FormData {
   extension: string;
   mobile: string;
   mobile2: string;
-  addWhatsapp: boolean;
-  addWhatsapp2: boolean;
-  addTelegram: boolean;
+  enableWhatsApp: boolean;
+  enableWhatsApp2: boolean;
+  enableTelegram: boolean;
   address: string;
   addressMapUrl: string;
   facebook: string;
@@ -63,9 +63,9 @@ export const DEFAULT_FORM_DATA: FormData = {
   extension: '',
   mobile: '',
   mobile2: '',
-  addWhatsapp: false,
-  addWhatsapp2: false,
-  addTelegram: false,
+  enableWhatsApp: false,
+  enableWhatsApp2: false,
+  enableTelegram: false,
   address: 'Av. Los Frutales 419. Urb. El Artesano Ate. Lima – Perú',
   addressMapUrl: 'https://maps.app.goo.gl/5gHmxXAgRGwDr5jk6',
   facebook: 'https://es-la.facebook.com/vinifan/',
