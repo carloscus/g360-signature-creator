@@ -16,6 +16,16 @@ export function isSafeUrl(url: string): boolean {
   return true;
 }
 
+export function validateUrl(url: string): string | null {
+  if (!isSafeUrl(url)) return 'Protocolo de URL no permitido';
+  try {
+    new URL(url);
+    return null;
+  } catch {
+    return 'URL no válida';
+  }
+}
+
 export function isValidEmail(email: string): boolean {
   const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
   return emailPattern.test(email);
@@ -41,30 +51,18 @@ export function validateFields(formData: FormData): ValidationResult {
   }
 
   if (formData.enableDigitalSignature && formData.digitalSignatureUrl) {
-    if (!isSafeUrl(formData.digitalSignatureUrl)) {
-      errors.digitalSignatureUrl = 'Protocolo de URL no permitido';
+    const urlError = validateUrl(formData.digitalSignatureUrl);
+    if (urlError) {
+      errors.digitalSignatureUrl = urlError;
       isValid = false;
-    } else {
-      try {
-        new URL(formData.digitalSignatureUrl);
-      } catch {
-        errors.digitalSignatureUrl = 'URL de firma digital no válida';
-        isValid = false;
-      }
     }
   }
 
   if (formData.bannerLink) {
-    if (!isSafeUrl(formData.bannerLink)) {
-      errors.bannerLink = 'Protocolo de URL no permitido';
+    const urlError = validateUrl(formData.bannerLink);
+    if (urlError) {
+      errors.bannerLink = urlError;
       isValid = false;
-    } else {
-      try {
-        new URL(formData.bannerLink);
-      } catch {
-        errors.bannerLink = 'URL del banner no válida';
-        isValid = false;
-      }
     }
   }
 
@@ -93,22 +91,12 @@ export function validateField(
       break;
     case 'digitalSignatureUrl':
       if (typeof value === 'string' && value) {
-        if (!isSafeUrl(value)) return 'Protocolo de URL no permitido';
-        try {
-          new URL(value);
-        } catch {
-          return 'URL no válida';
-        }
+        return validateUrl(value);
       }
       break;
     case 'bannerLink':
       if (typeof value === 'string' && value) {
-        if (!isSafeUrl(value)) return 'Protocolo de URL no permitido';
-        try {
-          new URL(value);
-        } catch {
-          return 'URL no válida';
-        }
+        return validateUrl(value);
       }
       break;
   }

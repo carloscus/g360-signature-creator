@@ -653,34 +653,18 @@ select.input-35 {
 }
 
 select.input-35 option {
-  background-color: #1a1a2e;
-  color: #f8fafc;
+  background-color: var(--input-bg);
+  color: var(--input-text);
   padding: 8px 12px;
 }
 
 select.input-35 option:hover,
 select.input-35 option:focus,
 select.input-35 option:active {
-  background-color: #2a2a4a;
+  background-color: var(--bg-surface-hover);
 }
 
 select.input-35 option:checked {
-  background-color: var(--primary-color);
-  color: #ffffff;
-}
-
-[data-theme="light"] select.input-35 option {
-  background-color: #ffffff;
-  color: #0f172a;
-}
-
-[data-theme="light"] select.input-35 option:hover,
-[data-theme="light"] select.input-35 option:focus,
-[data-theme="light"] select.input-35 option:active {
-  background-color: #e2e8f0;
-}
-
-[data-theme="light"] select.input-35 option:checked {
   background-color: var(--primary-color);
   color: #ffffff;
 }
@@ -988,6 +972,10 @@ select.input-35 option:checked {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 10px;
   margin: 0 auto;
+}
+
+[data-theme="dark"] .signature-wrapper {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 .signature-table { width: 420px; border-collapse: collapse; }

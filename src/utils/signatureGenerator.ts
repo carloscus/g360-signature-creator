@@ -419,6 +419,82 @@ async function generateEcoHTML(type: SignatureType, hasLogo: boolean, config: Ap
   `;
 }
 
+const LOGO_WIDTH = 120;
+
+async function buildLogoHTML(
+  type: SignatureType,
+  fields: FormData,
+  config: AppConfig,
+  iconCache: Record<string, string>,
+  wrapIfNeeded: (inner: string) => string
+): Promise<string> {
+  if (type === 'minimal') return '';
+
+  if (fields.logoType === 'logo1' || fields.logoType === 'logo2') {
+    const cacheKey = `${fields.logoType}-${fields.logoColor}`;
+    let logoBase64 = iconCache[cacheKey];
+
+    if (!logoBase64) {
+      try {
+        const fileName = fields.logoType === 'logo1' ? 'logo1.svg' : 'logo2.svg';
+        const resp = await fetch(`images/${fileName}`);
+        let svgText = await resp.text();
+
+        if (fields.logoType === 'logo1') {
+          svgText = svgText.replace(/fill="[^"]*"/g, `fill="${fields.logoColor}"`);
+        } else {
+          svgText = svgText.replace(/stroke="[^"]*"/g, `stroke="${fields.logoColor}"`);
+        }
+
+        if (!/width=/.test(svgText)) {
+          svgText = svgText.replace(/<svg/, `<svg width="${LOGO_WIDTH}" height="${LOGO_WIDTH}"`);
+        }
+
+        logoBase64 = await svgToPngBase64(svgText, LOGO_WIDTH, LOGO_WIDTH);
+        iconCache[cacheKey] = logoBase64; // Performance: cache mutations avoid re-converting logos
+      } catch (err) {
+        console.error('[SignatureGenerator] Error al cargar SVG:', err);
+      }
+    }
+
+    if (logoBase64) {
+      const inner = `<img src="${logoBase64}" alt="Logo" width="${LOGO_WIDTH}" height="${LOGO_WIDTH}" style="display: block; border: none; outline: none; text-decoration: none; max-width: ${LOGO_WIDTH}px; width: ${LOGO_WIDTH}px; height: ${LOGO_WIDTH}px; margin: 0 auto;">`;
+      return `<td class="logo-cell" width="${LOGO_WIDTH}" valign="middle" style="text-align: center; vertical-align: middle;">${wrapIfNeeded(inner)}</td>`;
+    }
+  } else if (fields.logoType === 'upload' && fields.logo) {
+    const inner = `<img src="${fields.logo}" alt="Logo" width="${LOGO_WIDTH}" height="${LOGO_WIDTH}" style="display: block; border: none; outline: none; text-decoration: none; max-width: ${LOGO_WIDTH}px; width: ${LOGO_WIDTH}px; height: ${LOGO_WIDTH}px; margin: 0 auto;">`;
+    return `<td class="logo-cell" width="${LOGO_WIDTH}" valign="middle" style="text-align: center; vertical-align: middle;">${wrapIfNeeded(inner)}</td>`;
+  }
+
+  return '';
+}
+
+async function buildContactRows(
+  fields: FormData,
+  config: AppConfig,
+  iconCache: Record<string, string>
+): Promise<{ emailHTML: string; locationHTML: string }> {
+  const emailIconSrc = await getIconBase64('email_icon', fields.socialIconColor, config, iconCache);
+  const emailHTML = fields.email
+    ? `
+    <p style="${STYLES.contactRow}">
+      <img src="${emailIconSrc}" ${STYLES.contactIcon}>
+      <a href="mailto:${fields.email}" style="${STYLES.link}">${fields.email}</a>
+    </p>`
+    : '';
+
+  const locationIconSrc = await getIconBase64('ubicacion', fields.socialIconColor, config, iconCache);
+  const locationHTML = fields.address
+    ? `
+    <p style="${STYLES.contactRow}">
+      <img src="${locationIconSrc}" ${STYLES.contactIcon}>
+      <a href="${fields.addressMapUrl || 'https://maps.app.goo.gl/5gHmxXAgRGwDr5jk6'}" target="_blank" rel="noopener noreferrer" style="${STYLES.link}">${fields.address.replace(/\n/g, '<br>')}</a>
+    </p>`
+    : '';
+
+  return { emailHTML, locationHTML };
+}
+
 export async function generateSignature(
   type: SignatureType,
   formData: FormData,
@@ -426,6 +502,7 @@ export async function generateSignature(
   iconCache: Record<string, string>
 ): Promise<string> {
   const fields = prepareFormData(formData);
+  const isMinimal = type === 'minimal';
 
   const wrapIfNeeded = (inner: string) => {
     if (fields.enableDigitalSignature) {
@@ -437,81 +514,20 @@ export async function generateSignature(
     return inner;
   };
 
-  let logoHTML = '';
-  const logoWidth = 120;
-  const isMinimal = type === 'minimal';
+  const logoHTML = await buildLogoHTML(type, fields, config, iconCache, wrapIfNeeded);
 
-  if (!isMinimal) {
-    // Solo generar logo si no es modo minimal
-    if (fields.logoType === 'logo1' || fields.logoType === 'logo2') {
-      const cacheKey = `${fields.logoType}-${fields.logoColor}`;
-      let logoBase64 = iconCache[cacheKey];
-
-      if (!logoBase64) {
-        try {
-          const fileName = fields.logoType === 'logo1' ? 'logo1.svg' : 'logo2.svg';
-          const resp = await fetch(`images/${fileName}`);
-          let svgText = await resp.text();
-
-          if (fields.logoType === 'logo1') {
-            svgText = svgText.replace(/fill="[^"]*"/g, `fill="${fields.logoColor}"`);
-          } else {
-            svgText = svgText.replace(/stroke="[^"]*"/g, `stroke="${fields.logoColor}"`);
-          }
-
-          if (!/width=/.test(svgText)) {
-            svgText = svgText.replace(/<svg/, `<svg width="${logoWidth}" height="${logoWidth}"`);
-          }
-
-          logoBase64 = await svgToPngBase64(svgText, logoWidth, logoWidth);
-          iconCache[cacheKey] = logoBase64; // Performance: cache mutations avoid re-converting logos
-        } catch (err) {
-          console.error('[SignatureGenerator] Error al cargar SVG:', err);
-        }
-      }
-
-      if (logoBase64) {
-        const inner = `<img src="${logoBase64}" alt="Logo" width="${logoWidth}" height="${logoWidth}" style="display: block; border: none; outline: none; text-decoration: none; max-width: ${logoWidth}px; width: ${logoWidth}px; height: ${logoWidth}px; margin: 0 auto;">`;
-        logoHTML = `<td class="logo-cell" width="${logoWidth}" valign="middle" style="text-align: center; vertical-align: middle;">${wrapIfNeeded(inner)}</td>`;
-      }
-    } else if (fields.logoType === 'upload' && fields.logo) {
-      const inner = `<img src="${fields.logo}" alt="Logo" width="${logoWidth}" height="${logoWidth}" style="display: block; border: none; outline: none; text-decoration: none; max-width: ${logoWidth}px; width: ${logoWidth}px; height: ${logoWidth}px; margin: 0 auto;">`;
-      logoHTML = `<td class="logo-cell" width="${logoWidth}" valign="middle" style="text-align: center; vertical-align: middle;">${wrapIfNeeded(inner)}</td>`;
-    }
-  }
-
-  // Generar contenido de forma paralela
-  const [phoneHTML, mobileHTML, mobile2HTML, socialHTML] = await Promise.all([
+  const [phoneHTML, mobileHTML, mobile2HTML, socialHTML, { emailHTML, locationHTML }] = await Promise.all([
     generatePhoneHTML(fields.phone, fields.extension, fields, config, iconCache),
     generateMobileHTML(fields.mobile, fields.enableWhatsApp, fields.enableTelegram, fields.name, config, fields, iconCache),
     generateMobileHTML(fields.mobile2, fields.enableWhatsApp2, false, fields.name, config, fields, iconCache),
-    generateSocialHTML(fields, type, config, iconCache)
+    generateSocialHTML(fields, type, config, iconCache),
+    buildContactRows(fields, config, iconCache),
   ]);
 
   const bannerHTML = generateBannerHTML(type, !!logoHTML, config, fields);
   const ecoHTML = await generateEcoHTML(type, !!logoHTML, config);
 
-  // Email icon
-  const emailIconSrc = await getIconBase64('email_icon', fields.socialIconColor, config, iconCache);
-  const emailHTML = fields.email
-    ? `
-    <p style="${STYLES.contactRow}">
-      <img src="${emailIconSrc}" ${STYLES.contactIcon}>
-      <a href="mailto:${fields.email}" style="${STYLES.link}">${fields.email}</a>
-    </p>`
-    : '';
-
-  // Línea de dirección/ubicación (dato de contacto, no red social)
-  const locationIconSrc = await getIconBase64('ubicacion', fields.socialIconColor, config, iconCache);
-  const locationHTML = fields.address
-    ? `
-    <p style="${STYLES.contactRow}">
-      <img src="${locationIconSrc}" ${STYLES.contactIcon}>
-      <a href="${fields.addressMapUrl || 'https://maps.app.goo.gl/5gHmxXAgRGwDr5jk6'}" target="_blank" rel="noopener noreferrer" style="${STYLES.link}">${fields.address.replace(/\n/g, '<br>')}</a>
-    </p>`
-    : '';
-
-const cols = logoHTML ? 2 : 1;
+  const cols = logoHTML ? 2 : 1;
   const infoCellStyle = logoHTML
     ? `border-left: ${fields.lineWidth}px solid ${fields.lineColor}; padding-left: 15px; vertical-align: middle;`
     : `padding-left: 0; vertical-align: middle;`;
