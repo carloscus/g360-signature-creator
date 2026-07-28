@@ -7,6 +7,16 @@
 [![Vite](https://img.shields.io/badge/Vite-4.5-646CFF?logo=vite)](https://vitejs.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+```mermaid
+flowchart TD
+    A[Usuario] -->|Completa formulario| B[App SolidJS]
+    B --> C[Preview en vivo]
+    C --> D[Generacion HTML]
+    D --> E[Copiar firma]
+    D --> F[Descargar PNG]
+    D --> G[Firma Zimbra]
+```
+
 ---
 
 ## Tabla de Contenidos
@@ -21,7 +31,6 @@
 - [Zimbra / Carbonio](#zimbra--carbonio)
 - [Estructura del Proyecto](#estructura-del-proyecto)
 - [Familia G360](#familia-g360)
-- [Herramientas Relacionadas](#herramientas-relacionadas)
 
 ---
 
