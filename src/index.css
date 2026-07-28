@@ -665,7 +665,7 @@ select.input-35 option:active {
 }
 
 select.input-35 option:checked {
-  background-color: var(--primary-color);
+  background-color: #00695C;
   color: #ffffff;
 }
 
